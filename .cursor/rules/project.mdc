@@ -1,0 +1,45 @@
+---
+description: Project scope, stack, and estimation rules for the wood-frame house cost agent
+alwaysApply: true
+---
+
+# Construction estimation agent
+
+AI cost and material estimation agent for building a wood-frame house. Western market, US first.
+
+## Stack
+
+- `server/`: Node.js + Express
+- `client/`: React + Vite + Tailwind + shadcn/ui
+- Database: Supabase (PostgreSQL)
+- LLM: OpenAI function calling
+
+## Estimation boundary
+
+The LLM never does arithmetic. All quantities and costs come from deterministic, tested functions in `server/src/estimators/`. The LLM only extracts inputs, calls tools, and explains results.
+
+```javascript
+// ❌ BAD — model invents a total
+const total = await llm("What does 2400 sqft of framing cost?");
+
+// ✅ GOOD — code computes; model only narrates
+const result = estimateFraming({ sqft: 2400, rate });
+```
+
+Every estimate must include:
+
+- The assumptions used
+- A low/high range
+- The disclaimer: `Budget estimate only. Not a bid or structural design.`
+
+## Code
+
+- Use ES modules and small pure functions.
+- Write a vitest test for every estimator function.
+- Keep rates, quantity factors, and percentages in the database. Do not hardcode them.
+
+## Secrets
+
+Never commit secrets. Use `.env` (gitignored) and `.env.example`.
+
+Read docs/ARCHITECTURE.md before changing chat, agent, upload, estimate or export code, and keep it updated when the flow changes.
